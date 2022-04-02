@@ -1,0 +1,45 @@
+{
+	"bsonType": "object",
+	"permission": {
+		"create": "auth.uid != null",
+		"delete": "doc.user_id == auth.uid",
+		"read": true,
+		"update": false
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"cz_id": {
+			"bsonType": "string",
+			"description": "文章ID，creation 表中的`_id`字段",
+			"foreignKey": "creation._id"
+		},
+		"comment_id": {
+			"bsonType": "string",
+			"description": "文章ID，creation 表中的`_id`字段",
+			"foreignKey": "creation-comments._id"
+		},
+		"auth_id": {
+			"bsonType": "string",
+			"description": "被收藏者（对方）id，参考uni-id-users表",
+			"foreignKey": "uni-id-users._id"
+		},
+		"create_date": {
+			"bsonType": "timestamp",
+			"description": "收藏时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		},
+		"user_id": {
+			"bsonType": "string",
+			"description": "收藏者id，参考uni-id-users表",
+			"forceDefaultValue": {
+				"$env": "uid"
+			},
+			"foreignKey": "uni-id-users._id"
+		}
+	},
+	"required": ["user_id"]
+}
