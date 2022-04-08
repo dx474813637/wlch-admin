@@ -65,7 +65,7 @@
 				formData: {
 					"username": "",
 					"password": "",
-					"role": [],
+					"role": ["MEMBER"],
 					"dcloud_appid": [],
 					"tags": [],
 					"mobile": "",

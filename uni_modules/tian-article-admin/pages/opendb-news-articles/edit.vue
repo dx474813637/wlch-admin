@@ -4,13 +4,20 @@
 			<uni-forms-item name="title" label="标题">
 				<uni-easyinput placeholder="标题" v-model="formData.title" />
 			</uni-forms-item>
-			<uni-forms-item name="avatar" label="封面大图">
-				<cloud-image placeholder="缩略图地址" v-model="formData.avatar"></cloud-image>
-				<!-- <uni-easyinput placeholder="缩略图地址" v-model="formData.avatar" /> -->
+			<uni-forms-item name="type" label="创作类型">
+				<uni-data-checkbox :localdata="formOptions.type" v-model="formData.type">
+				</uni-data-checkbox>
+			</uni-forms-item>
+			<uni-forms-item name="huaban_imgs" label="画板作品集" v-if="formData.type == 1">
+				<cloud-image placeholder="画板作品集" v-model="formData.huaban_imgs" :imageNumber="9"></cloud-image>
 			</uni-forms-item>
 			<uni-forms-item name="category_id" label="分类">
-				<uni-data-checkbox v-model="formData.category_id" collection="creation-categories"
-					field="name as text, _id as value" />
+				<uni-data-checkbox mode="tag" v-model="formData.category_id" collection="creation-categories"
+					field="name as text, menu_id as value" />
+			</uni-forms-item>
+			<uni-forms-item name="industry_id" label="行业">
+				<uni-data-checkbox mode="tag" v-model="formData.industry_id" collection="creation-industry"
+					field="name as text, menu_id as value" />
 			</uni-forms-item>
 			<uni-forms-item name="excerpt" label="摘要">
 				<uni-easyinput placeholder="文章摘录" v-model="formData.excerpt" />
@@ -31,12 +38,12 @@
 			<uni-forms-item name="view_count" label="阅读数量">
 				<uni-easyinput placeholder="阅读数量" type="number" v-model="formData.view_count" />
 			</uni-forms-item>
-			<uni-forms-item name="like_count" label="点赞数">
+			<!-- <uni-forms-item name="like_count" label="点赞数">
 				<uni-easyinput placeholder="喜欢数、点赞数" type="number" v-model="formData.like_count" />
 			</uni-forms-item>
 			<uni-forms-item name="comment_count" label="评论数">
 				<uni-easyinput placeholder="评论数" type="number" v-model="formData.comment_count" />
-			</uni-forms-item>
+			</uni-forms-item> -->
 			<uni-forms-item name="status" label="发布">
 				<uni-data-checkbox :localdata="formOptions.status" v-model="formData.status">
 				</uni-data-checkbox>
@@ -52,6 +59,9 @@
 			<uni-forms-item name="comment_status" label="开放评论">
 				<uni-data-checkbox :localdata="formOptions.status" v-model="formData.comment_status">
 				</uni-data-checkbox>
+			</uni-forms-item>
+			<uni-forms-item name="avatar" label="封面大图">
+				<cloud-image placeholder="缩略图地址" v-model="formData.avatar"></cloud-image>
 			</uni-forms-item>
 			<view class="uni-button-group">
 				<button type="primary" class="uni-button" style="width: 100px;" @click="submit">提交</button>
@@ -90,7 +100,10 @@
 				formData: {
 					"user_id": "",
 					"category_id": "",
+					"industry_id": "",
+					"huaban_imgs": [],
 					"title": "",
+					"type": null,
 					"content": "",
 					"excerpt": "",
 					"source_from": "",
@@ -127,12 +140,21 @@
 							value: 0,
 							text: "否"
 						}
-					]
+					],
+					type: [{
+							value: 1,
+							text: "画板"
+						},
+						{
+							value: 2,
+							text: "文章"
+						}
+					], 
 				},
 				rules: {
 					...getValidator(["user_id", "title", "content", "excerpt", "status", "comment_status",
 						"last_comment_user_id", "avatar", "publish_date", "last_modify_date", "last_modify_ip",
-						"category_id",
+						"category_id", "industry_id",
 						"comment_count", "is_essence", "is_sticky", "view_count", "like_count", "publish_ip"
 					])
 				}
@@ -166,6 +188,12 @@
 
 			submitForm(value) {
 				// 使用 unicloud-db 提交数据
+				
+				if(value.type == 1 && value.huaban_imgs.length > 0) {
+					value.huaban_imgs = value.huaban_imgs.map(ele => {
+						return {url: ele}
+					})
+				}
 				db.collection(dbCollectionName).doc(this.formDataId).update(value).then((res) => {
 					uni.showToast({
 						title: '修改成功'
@@ -191,10 +219,14 @@
 					mask: true
 				})
 				db.collection(dbCollectionName).doc(id).field(
-					'user_id,title,content,excerpt,status,comment_status,last_comment_user_id,avatar,publish_date,last_modify_date,mode,category_id,comment_count,is_essence,is_sticky,view_count,like_count'
+					'user_id,title,content,excerpt,huaban_imgs,status,comment_status,type,last_comment_user_id,avatar,publish_date,last_modify_date,mode,category_id,industry_id,comment_count,is_essence,is_sticky,view_count,like_count'
 				).get().then((res) => {
 					const data = res.result.data[0]
+					// console.log(data)
 					if (data) {
+						if(data.type == 1 && data.huaban_imgs.length > 0) {
+							data.huaban_imgs = data.huaban_imgs.map(ele => ele.url)
+						}
 						this.formData = data
 					}
 				}).catch((err) => {

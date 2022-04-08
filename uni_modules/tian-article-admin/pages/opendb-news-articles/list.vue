@@ -15,26 +15,28 @@
 		<view class="uni-container">
 			<unicloud-db ref="udb" :collection="collectionName" :options="options" :where="where" page-data="replace"
 				:orderby="orderby"
-				field="title,category_id,industry_id,type,status,comment_count,view_count,like_count,avatar,publish_date,last_modify_date"
+				field="title,category_id,industry_id,type,status,comment_count,view_count,like_count,avatar,publish_date,last_modify_date,user_id{nickname}"
 				:getcount="true" :page-size="options.pageSize" :page-current="options.pageCurrent"
 				v-slot:default="{data,pagination,loading,error}" @load="handleLoad">
 				<uni-table :loading="loading" :emptyText="error.message || '没有更多数据'" border stripe type="selection"
 					@selection-change="selectionChange">
 					<uni-tr>
 						<uni-th align="center">创作标题</uni-th>
+						<uni-th align="center">创作者</uni-th>
 						<uni-th align="center">创作类型</uni-th>
 						<!-- <uni-th align="center">封面大图</uni-th> -->
 						<uni-th align="center">分类</uni-th>
 						<uni-th align="center">行业</uni-th>
 						<uni-th align="center">是否发布</uni-th>
+						<uni-th align="center">最后修改</uni-th>
 						<uni-th align="center">浏览量</uni-th>
 						<uni-th align="center">评论量</uni-th>
 						<uni-th align="center">点赞量</uni-th>
-						<uni-th align="center">最后修改</uni-th>
 						<uni-th width="204" align="center">操作</uni-th>
 					</uni-tr>
 					<uni-tr v-for="(item,index) in data" :key="index">
 						<uni-td align="center" width="300">{{item.title}}</uni-td>
+						<uni-td align="center" width="300">{{item.user_id[0].nickname}}</uni-td>
 						<uni-td align="center"> {{item.type === 1 ? '画板' : '文章'}} </uni-td>
 						<!-- <uni-td align="center">
 							<image v-if="item.avatar" :src="item.avatar" mode="aspectFill" class="suoluetu"></image>
@@ -44,12 +46,12 @@
 						<uni-td align="center">{{item.industry_id?item.industry_id.map(e=>e.name).join("、"):""}}
 						</uni-td>
 						<uni-td align="center"> {{item.status === 1 ? '√' : '×'}} </uni-td>
-						<uni-td align="center"> {{item.view_count}} </uni-td>
-						<uni-td align="center"> {{item.comment_count}} </uni-td>
-						<uni-td align="center"> {{item.like_count}} </uni-td>
 						<uni-td align="center">
 							<uni-dateformat :date="item.last_modify_date" :threshold="[0, 0]" />
 						</uni-td>
+						<uni-td align="center"> {{item.view_count}} </uni-td>
+						<uni-td align="center"> {{item.comment_count}} </uni-td>
+						<uni-td align="center"> {{item.like_count}} </uni-td>
 						<uni-td align="center">
 							<view class="uni-group">
 								<button @click="navigateTo('./edit?id='+item._id)" class="uni-button" size="mini"
@@ -72,9 +74,9 @@
 <script>
 	const db = uniCloud.database()
 	// 表查询配置
-	const dbCollectionName = 'creation,creation-categories,creation-industry'
+	const dbCollectionName = 'creation,creation-categories,creation-industry,uni-id-users'
 	const dbOrderBy = 'publish_date desc' // 排序字段
-	const dbSearchFields = [] // 支持模糊搜索的字段列表
+	const dbSearchFields = ['title', 'content', 'user_id.nickname'] // 支持模糊搜索的字段列表
 	// 分页配置
 	const pageSize = 20
 	const pageCurrent = 1

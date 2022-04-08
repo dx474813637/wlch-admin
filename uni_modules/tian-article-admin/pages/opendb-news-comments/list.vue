@@ -9,7 +9,7 @@
       <view class="uni-group">
         <input class="uni-search" type="text" v-model="query" placeholder="请输入搜索内容" />
         <button class="uni-button" type="default" size="mini" @click="search">搜索</button>
-        <button class="uni-button" type="default" size="mini" @click="navigateTo('./add')">新增</button>
+        <!-- <button class="uni-button" type="default" size="mini" @click="navigateTo('./add')">新增</button> -->
         <button class="uni-button" type="default" size="mini" @click="delTable">批量删除</button>
       </view>
     </view>
@@ -57,7 +57,7 @@
   // 表查询配置
   const dbCollectionName = 'creation-comments, uni-id-users, creation'
   const dbOrderBy = '' // 排序字段
-  const dbSearchFields = [] // 支持模糊搜索的字段列表
+  const dbSearchFields = ['comment_content', 'user_id.nickname'] // 支持模糊搜索的字段列表
   // 分页配置
   const pageSize = 20
   const pageCurrent = 1

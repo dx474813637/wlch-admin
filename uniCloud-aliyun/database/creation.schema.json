@@ -1,7 +1,7 @@
 {
 	"bsonType": "object",
 	"permission": {
-		"create": "auth.uid != null",
+		"create": "auth.uid != null && 'CZ_ADD' in auth.permission",
 		"delete": "doc.user_id == auth.uid",
 		"read": "doc.user_id == auth.uid && doc.status == 0 || doc.status == 1",
 		"update": "doc.user_id == auth.uid"
@@ -86,6 +86,7 @@
 		"comment_status": {
 			"bsonType": "int",
 			"description": "评论状态：0 关闭  1 开放",
+			"defaultValue": 1,
 			"enum": [{
 					"text": "关闭",
 					"value": 0
@@ -112,23 +113,59 @@
 			"trim": "both"
 		},
 		"is_essence": {
-			"bsonType": "bool",
-			"description": "阅读加精",
-			"defaultValue": false,
+			"bsonType": "int",
+			"description": "是否加精状态：0 否  1 是",
+			"defaultValue": 0,
 			"permission": {
 				"write": false
 			},
-			"title": "阅读加精"
+			"enum": [{
+					"text": "否",
+					"value": 0
+				},
+				{
+					"text": "是",
+					"value": 1
+				}
+			],
+			"title": "是否加精"
 		},
 		"is_sticky": {
-			"bsonType": "bool",
-			"description": "是否置顶",
-			"defaultValue": false,
+			"bsonType": "int",
+			"description": "是否置顶状态：0 否  1 是",
+			"defaultValue": 0,
 			"permission": {
 				"write": false
 			},
+			"enum": [{
+					"text": "否",
+					"value": 0
+				},
+				{
+					"text": "是",
+					"value": 1
+				}
+			],
 			"title": "是否置顶"
 		},
+		// "is_essence": {
+		// 	"bsonType": "bool",
+		// 	"description": "阅读加精",
+		// 	"defaultValue": false,
+		// 	"permission": {
+		// 		"write": false
+		// 	},
+		// 	"title": "阅读加精"
+		// },
+		// "is_sticky": {
+		// 	"bsonType": "bool",
+		// 	"description": "是否置顶",
+		// 	"defaultValue": false,
+		// 	"permission": {
+		// 		"write": false
+		// 	},
+		// 	"title": "是否置顶"
+		// },
 		"last_comment_user_id": {
 			"bsonType": "string",
 			"description": "最后回复用户 id，参考`uni-id-users` 表",

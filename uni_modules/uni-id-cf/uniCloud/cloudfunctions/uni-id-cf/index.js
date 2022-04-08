@@ -166,10 +166,10 @@ exports.main = async (event, context) => {
 			recordSize = 2;
 		const uniIdLogCollection = db.collection('uni-id-log')
 		let recentRecord = await uniIdLogCollection.where({
-				deviceId: params.deviceId || context.DEVICEID,
-				create_date: dbCmd.gt(now - recordDate),
-				type: 'login'
-			})
+			deviceId: params.deviceId || context.DEVICEID,
+			create_date: dbCmd.gt(now - recordDate),
+			type: 'login'
+		})
 			.orderBy('create_date', 'desc')
 			.limit(recordSize)
 			.get();
@@ -279,6 +279,7 @@ exports.main = async (event, context) => {
 				username,
 				password,
 				nickname,
+				role: ["MEMBER"],
 				inviteCode
 			});
 			if (res.code === 0) {
@@ -330,10 +331,10 @@ exports.main = async (event, context) => {
 					} = uniIdConfig['app-plus'].oauth.weixin;
 					let wxRes = await uniCloud.httpclient.request(
 						`https://api.weixin.qq.com/sns/userinfo?access_token=${access_token}&openid=${openid}&scope=snsapi_userinfo&appid=${appid}&secret=${secret}`, {
-							method: 'POST',
-							contentType: 'json', // 指定以application/json发送data内的数据
-							dataType: 'json' // 指定返回值为json格式，自动进行parse
-						})
+						method: 'POST',
+						contentType: 'json', // 指定以application/json发送data内的数据
+						dataType: 'json' // 指定返回值为json格式，自动进行parse
+					})
 					if (wxRes.status == 200) {
 						let {
 							nickname,
@@ -519,7 +520,7 @@ exports.main = async (event, context) => {
 			});
 			break;
 
-			// =========================== admin api start =========================
+		// =========================== admin api start =========================
 		case 'registerAdmin': {
 			var {
 				username,
@@ -559,9 +560,9 @@ exports.main = async (event, context) => {
 				}
 
 			}
-			break;
 		}
-		case 'registerUser': {
+			break;
+		case 'registerUser':
 			const {
 				userInfo
 			} = await uniID.getUserInfo({
@@ -576,7 +577,6 @@ exports.main = async (event, context) => {
 				// 过滤 dcloud_appid，注册用户成功后再提交
 				const dcloudAppidList = params.dcloud_appid
 				delete params.dcloud_appid
-				delete params.uid
 				res = await uniID.register({
 					autoSetDcloudAppid: false,
 					...params
@@ -591,7 +591,6 @@ exports.main = async (event, context) => {
 				}
 			}
 			break;
-		}
 		case 'updateUser': {
 			const {
 				userInfo

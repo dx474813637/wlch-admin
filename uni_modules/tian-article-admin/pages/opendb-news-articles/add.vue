@@ -4,12 +4,19 @@
 			<uni-forms-item name="title" label="标题">
 				<uni-easyinput placeholder="标题" v-model="formData.title" />
 			</uni-forms-item>
-			<uni-forms-item name="avatar" label="封面大图">
+			<uni-forms-item name="type" label="创作类型">
+				<uni-data-checkbox :localdata="formOptions.type" v-model="formData.type">
+				</uni-data-checkbox>
+			</uni-forms-item>
+			<uni-forms-item name="huaban_imgs" label="画板作品集" v-if="formData.type == 1">
+				<cloud-image placeholder="画板作品集" v-model="formData.huaban_imgs" :imageNumber="9"></cloud-image>
+			</uni-forms-item>
+			<uni-forms-item name="avatar" label="封面大图" v-if="formData.type == 2">
 				<cloud-image placeholder="缩略图地址" v-model="formData.avatar"></cloud-image>
 			</uni-forms-item>
 			<uni-forms-item name="category_id" label="分类">
-				<uni-data-checkbox v-model="formData.category_id" collection="opendb-news-categories"
-					field="name as text, _id as value" />
+				<uni-data-checkbox v-model="formData.category_id" collection="creation-categories"
+					field="name as text, menu_id as value" />
 			</uni-forms-item>
 			<uni-forms-item name="excerpt" label="摘要">
 				<uni-easyinput placeholder="文章摘录" v-model="formData.excerpt" />
@@ -24,15 +31,15 @@
 			<uni-forms-item name="source_from" label="来源">
 				<uni-easyinput placeholder="请输入完整来源信息" v-model="formData.source_from" />
 			</uni-forms-item>
-			<uni-forms-item name="view_count" label="阅读数量">
+			<!-- <uni-forms-item name="view_count" label="阅读数量">
 				<uni-easyinput placeholder="阅读数量" type="number" v-model="formData.view_count" />
-			</uni-forms-item>
-			<uni-forms-item name="like_count" label="点赞数">
+			</uni-forms-item> -->
+			<!-- <uni-forms-item name="like_count" label="点赞数">
 				<uni-easyinput placeholder="喜欢数、点赞数" type="number" v-model="formData.like_count" />
 			</uni-forms-item>
 			<uni-forms-item name="comment_count" label="评论数">
 				<uni-easyinput placeholder="评论数" type="number" v-model="formData.comment_count" />
-			</uni-forms-item>
+			</uni-forms-item> -->
 			<uni-forms-item name="article_status" label="发布">
 				<uni-data-checkbox :localdata="formOptions.status" v-model="formData.article_status">
 				</uni-data-checkbox>
@@ -101,21 +108,32 @@
 							value: 0,
 							text: "否"
 						}
-					]
+					],
+					type: [{
+							value: 1,
+							text: "画板"
+						},
+						{
+							value: 2,
+							text: "文章"
+						}
+					], 
 				},
 				formData: {
 					"user_id": "",
 					"category_id": "",
+					"huaban_imgs": [],
 					"title": "",
 					"content": "",
 					"excerpt": "",
 					"source_from": "",
 					"article_status": 1,
+					"type": 2,
 					"view_count": 0,
 					"like_count": 0,
 					"is_sticky": 0,
 					"is_essence": 0,
-					"comment_status": 0,
+					"comment_status": 1,
 					"comment_count": 0,
 					"last_comment_user_id": "",
 					"avatar": "",
@@ -145,7 +163,7 @@
 				uni.showLoading({
 					mask: true
 				})
-				this.$refs.form.submit().then((res) => {
+				this.$refs.form.validate().then((res) => {
 					this.submitForm(res)
 				}).catch((errors) => {
 					uni.hideLoading()
@@ -154,6 +172,11 @@
 
 			submitForm(value) {
 				// 使用 unicloud-db 提交数据
+				if(value.huaban_imgs.length > 0) {
+					value.huaban_imgs = value.huaban_imgs.map(ele => {
+						return {url: ele}
+					})
+				}
 				db.collection(dbCollectionName).add(value).then((res) => {
 					uni.showToast({
 						title: '新增成功'

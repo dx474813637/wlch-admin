@@ -1,6 +1,6 @@
 {
-  "passwordSecret": "passwordSecret-demo",
-  "tokenSecret": "tokenSecret-demo",
+  "passwordSecret": "dx5184-password-secret",
+  "tokenSecret": "dx5184-token-secret",
   "tokenExpiresIn": 7200,
   "tokenExpiresThreshold": 600,
   "passwordErrorLimit": 6,

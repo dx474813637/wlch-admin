@@ -20,34 +20,7 @@
 				"navigationBarTitleText": "修改密码"
 			}
 
-		}
-	    ,{
-            "path" : "pages/creationAdmin/creationAdmin",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/creationAdmin/commentsAdmin",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/creationAdmin/favoriteAdmin",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        },
+		},
 		{
 		    "path": "uni_modules/uni-feedback-admin/pages/uni-feedback-admin/add",
 		    "style": {
